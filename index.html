@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Enterprise Project Management Dashboard">
+    <title>ProjectHub Pro - Enterprise Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-rocket"></i>
+                <h1>ProjectHub Pro</h1>
+                <p>Enterprise Project Management</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span>Login</span>
+                    <div class="ripple"></div>
+                </button>
+                <div class="login-hint">
+                    <small>Demo: admin / admin123</small>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer" style="display: none;">
+    <div class="toast" id="toast"></div>
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+    </div>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-rocket"></i>
+            <span>ProjectHub Pro</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" data-page="dashboard" data-shortcut="Alt+1">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+                <kbd>1</kbd>
+            </a>
+            <a href="#" class="nav-item" data-page="projects" data-shortcut="Alt+2">
+                <i class="fas fa-folder"></i>
+                <span>Projects</span>
+                <kbd>2</kbd>
+            </a>
+            <a href="#" class="nav-item" data-page="tasks" data-shortcut="Alt+3">
+                <i class="fas fa-list-check"></i>
+                <span>Tasks</span>
+                <kbd>3</kbd>
+            </a>
+            <a href="#" class="nav-item" data-page="kanban" data-shortcut="Alt+4">
+                <i class="fas fa-columns"></i>
+                <span>Kanban</span>
+                <kbd>4</kbd>
+            </a>
+            <a href="#" class="nav-item" data-page="calendar" data-shortcut="Alt+5">
+                <i class="fas fa-calendar"></i>
+                <span>Calendar</span>
+                <kbd>5</kbd>
+            </a>
+            <a href="#" class="nav-item" data-page="settings" data-shortcut="Alt+6">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+                <kbd>6</kbd>
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <header class="navbar">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search projects, tasks... (Ctrl+K)" id="searchInput" aria-label="Search">
+            </div>
+            <div class="navbar-right">
+                <div class="theme-selector">
+                    <button class="theme-btn" data-theme="light" aria-label="Light theme">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button class="theme-btn" data-theme="auto" aria-label="Auto theme">
+                        <i class="fas fa-circle-half-stroke"></i>
+                    </button>
+                    <button class="theme-btn active" data-theme="dark" aria-label="Dark theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <div class="notification" id="notificationBtn" role="button" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationBadge">0</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <img src="https://ui-avatars.com/api/?name=John+Doe&background=537D96&color=fff" alt="User avatar">
+                    <span id="userName">John Doe</span>
+                    <button class="logout-btn" id="logoutBtn" aria-label="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="content" id="content">
+            <div class="skeleton-loader">
+                <div class="skeleton-header"></div>
+                <div class="skeleton-grid">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="projectModalTitle">Create New Project</h2>
+                <button class="close-btn" onclick="closeModal('projectModal')" aria-label="Close">&times;</button>
+            </div>
+            <form id="projectForm" novalidate>
+                <input type="hidden" id="projectId">
+                <div class="form-group">
+                    <label>Project Name *</label>
+                    <input type="text" id="projectName" required minlength="3" aria-required="true">
+                    <span class="error-msg"></span>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="projectDescription" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="projectStatus">
+                            <option value="Active">Active</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="projectPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="date" id="projectDeadline">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('projectModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>Save Project</span>
+                        <div class="ripple"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="taskModalTitle">Create New Task</h2>
+                <button class="close-btn" onclick="closeModal('taskModal')" aria-label="Close">&times;</button>
+            </div>
+            <form id="taskForm" novalidate>
+                <input type="hidden" id="taskId">
+                <input type="hidden" id="taskProjectId">
+                <div class="form-group">
+                    <label>Task Name *</label>
+                    <input type="text" id="taskName" required minlength="3" aria-required="true">
+                    <span class="error-msg"></span>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="taskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="taskStatus">
+                            <option value="To Do">To Do</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="taskPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <input type="date" id="taskDueDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned To</label>
+                        <input type="text" id="taskAssignee" placeholder="Team member name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>Save Task</span>
+                        <div class="ripple"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm Action</h2>
+                <button class="close-btn" onclick="closeModal('confirmModal')" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('confirmModal')">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="shortcuts-help" id="shortcutsHelp">
+        <h3>Keyboard Shortcuts</h3>
+        <ul>
+            <li><kbd>Alt</kbd> + <kbd>1-6</kbd> Navigate pages</li>
+            <li><kbd>Ctrl</kbd> + <kbd>K</kbd> Search</li>
+            <li><kbd>Ctrl</kbd> + <kbd>N</kbd> New project</li>
+            <li><kbd>Esc</kbd> Close modal</li>
+            <li><kbd>?</kbd> Show shortcuts</li>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</div>
+</body>
+</html>
